@@ -1,0 +1,60 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KafeKlik - Menu Digital</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>KafeKlik</h1>
+        <p>Selamat datang! Silakan pilih menu favoritmu.</p>
+    </header>
+
+    <nav id="filter-container">
+        <button class="filter-btn active" data-kategori="Semua">Semua</button>
+        <button class="filter-btn" data-kategori="Makanan">Makanan</button>
+        <button class="filter-btn" data-kategori="Minuman">Minuman</button>
+    </nav>
+
+    <main id="menu-container">
+        <!-- Menu akan muncul di sini secara otomatis -->
+    </main>
+
+    <!-- Tombol Keranjang Mengambang -->
+    <button id="cart-btn" onclick="toggleCart()">
+        🛒 Keranjang (<span id="cart-count">0</span>)
+    </button>
+
+    <!-- Pop-up Keranjang -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="toggleCart()">&times;</span>
+            <h2>Keranjang Kamu</h2>
+            <ul id="cart-items"></ul>
+            <div class="cart-total">
+                Total: Rp <span id="cart-total">0</span>
+            </div>
+            <button class="order-btn" onclick="checkout()">Pesan via WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- Memuat Data dan Logika -->
+    <script src="dataMenu.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Mendaftarkan Service Worker untuk fitur Offline (PWA) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker aktif!'))
+                    .catch(err => console.log('Gagal register SW:', err));
+            });
+        }
+    </script>
+</body>
+</html>
