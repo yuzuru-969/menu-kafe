@@ -95,7 +95,7 @@ function checkout() {
     message += `%0ATotal: Rp ${total.toLocaleString('id-ID')}`;
     
     // GANTI nomor di bawah ini dengan nomor WhatsApp Cafe asli!
-    window.open(`https://wa.me/6281234567890?text=${message}`, '_blank');
+    window.open(`https://wa.me/62881026749566?text=${message}`, '_blank');
 }
 
 // 8. Event Listener untuk tombol filter kategori
