@@ -1,7 +1,7 @@
 // script.js
 let cart = JSON.parse(localStorage.getItem('kafeKlikCart')) || [];
 
-// 1. Fungsi untuk menampilkan menu
+// Tampilkan menu
 function renderMenu(filter = 'Semua') {
     const container = document.getElementById('menu-container');
     container.innerHTML = '';
@@ -25,7 +25,7 @@ function renderMenu(filter = 'Semua') {
     });
 }
 
-// 2. Fungsi menambah ke keranjang
+// Tambah ke keranjang
 function addToCart(id) {
     const item = dataMenu.find(m => m.id === id);
     const existing = cart.find(c => c.id === id);
@@ -41,19 +41,28 @@ function addToCart(id) {
     showFeedback(item.nama);
 }
 
-// 3. Animasi feedback tombol keranjang
+// Hapus dari keranjang
+function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    saveCart();
+    updateCartUI();
+    updateCartButton();
+    showFeedback('Item dihapus dari keranjang');
+}
+
+// Feedback animasi
 function showFeedback(name) {
     const btn = document.getElementById('cart-btn');
     btn.innerText = `✅ ${name} ditambahkan!`;
     setTimeout(() => { updateCartButton(); }, 1500);
 }
 
-// 4. Menyimpan keranjang ke LocalStorage (Agar tidak hilang saat refresh)
+// Simpan ke LocalStorage
 function saveCart() {
     localStorage.setItem('kafeKlikCart', JSON.stringify(cart));
 }
 
-// 5. Update tampilan keranjang dan total harga
+// Update tampilan keranjang
 function updateCartUI() {
     updateCartButton();
     const list = document.getElementById('cart-items');
@@ -67,25 +76,40 @@ function updateCartUI() {
         cart.forEach(item => {
             const subtotal = item.harga * item.qty;
             total += subtotal;
-            list.innerHTML += `<li><span>${item.nama} (x${item.qty})</span><span>Rp ${subtotal.toLocaleString('id-ID')}</span></li>`;
+            list.innerHTML += `
+                <li>
+                    <div>
+                        <strong>${item.nama}</strong><br>
+                        <small>x${item.qty} @ Rp ${item.harga.toLocaleString('id-ID')}</small>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span>Rp ${subtotal.toLocaleString('id-ID')}</span>
+                        <button class="delete-btn" onclick="removeFromCart(${item.id})" title="Hapus">🗑️</button>
+                    </div>
+                </li>
+            `;
         });
     }
     totalEl.innerText = total.toLocaleString('id-ID');
 }
 
+// Update angka di tombol keranjang
 function updateCartButton() {
     const count = cart.reduce((sum, item) => sum + item.qty, 0);
     document.getElementById('cart-btn').innerHTML = `🛒 Keranjang (<span id="cart-count">${count}</span>)`;
 }
 
-// 6. Buka/Tutup Pop-up Keranjang
+// Buka/tutup pop-up keranjang
 function toggleCart() {
     document.getElementById('cart-modal').classList.toggle('show');
 }
 
-// 7. Fitur Checkout via WhatsApp (Bonus untuk Cafe!)
+// Checkout via WhatsApp + Reset otomatis
 function checkout() {
     if(cart.length === 0) return alert('Keranjang kosong!');
+    
+    const konfirmasi = confirm('Kirim pesanan ke WhatsApp dan kosongkan keranjang?');
+    if (!konfirmasi) return;
     
     let message = "Halo, saya ingin memesan:%0A%0A";
     cart.forEach(item => {
@@ -94,11 +118,18 @@ function checkout() {
     const total = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
     message += `%0ATotal: Rp ${total.toLocaleString('id-ID')}`;
     
-    // GANTI nomor di bawah ini dengan nomor WhatsApp Cafe asli!
-    window.open(`https://wa.me/62881026749566?text=${message}`, '_blank');
+    window.open(`https://wa.me/6285196289709?text=${message}`, '_blank');
+    
+    // Reset otomatis
+    cart = [];
+    saveCart();
+    updateCartUI();
+    updateCartButton();
+    toggleCart();
+    alert('✅ Pesanan terkirim! Keranjang sudah dikosongkan.');
 }
 
-// 8. Event Listener untuk tombol filter kategori
+// Event listener filter kategori
 document.getElementById('filter-container').addEventListener('click', (e) => {
     if (e.target.classList.contains('filter-btn')) {
         document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -107,6 +138,6 @@ document.getElementById('filter-container').addEventListener('click', (e) => {
     }
 });
 
-// Inisialisasi awal
+// Inisialisasi
 renderMenu();
 updateCartUI();
